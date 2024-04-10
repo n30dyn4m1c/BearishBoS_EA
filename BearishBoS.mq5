@@ -1,6 +1,6 @@
 //+------------------------------------------------------------------+
-//|                                 Bearish Break of Structure Alert |
-//                                                    BearishBoS.mq5 |
+//|                                 Bullish Break of Structure Alert |
+//                                                    BullishBoS.mq5 |
 //|                                                Author: n30dyn4m1c|
 //|                                     https://medium.com/neomalesa |
 //+------------------------------------------------------------------+
@@ -8,13 +8,13 @@
 #property link      "https://medium.com/neomalesa"
 #property version   "1.01"
 
-// Global variables to track the current and previous lows
-double currentLow = 0.0; // Variable to hold the current low
-double previousLow = 0.0; // Variable to hold the previous low
+// Global variables to track the current and previous highs
+double currentHigh = 0.0; // Variable to hold the current high
+double previousHigh = 0.0; // Variable to hold the previous high
 double closePrice = 0.0; // Variable to hold the closePrice
 
 bool alertSent = false; //Variable to flag alert
-bool newLow = false; //Variable to flag newLow
+bool newHigh = false; //Variable to flag newHigh
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -22,17 +22,14 @@ bool newLow = false; //Variable to flag newLow
 int OnInit()
   {
 //---
-    
     // Calculate timer interval based on the chart's timeframe
     int timerInterval = 60; // Default interval in seconds
-
+  
     // Set timer to check for alerts after each candle closes
     EventSetTimer(timerInterval); // Timer interval in seconds
     
     return(INIT_SUCCEEDED);
     
-//---
-
   }
 //+------------------------------------------------------------------+
 //| Expert deinitialization function                                 |
@@ -49,34 +46,34 @@ void OnDeinit(const int reason)
 void OnTick()
   {
 //---
-   double low1 = iLow(_Symbol, _Period, 1); // Low of the previous candle
-   double low2 = iLow(_Symbol, _Period, 2); // Low of two candles ago
-   double low3 = iLow(_Symbol, _Period, 3); // Low of three candles ago
+   double high1 = iHigh(_Symbol, _Period, 1); // High of the previous candle
+   double high2 = iHigh(_Symbol, _Period, 2); // High of two candles ago
+   double high3 = iHigh(_Symbol, _Period, 3); // High of three candles ago
    closePrice = iClose(_Symbol, _Period, 1); // Get the closing price of the current candle
   
-  // Check if the middle candle is a new low
-   if(low2 < low1 && low2 < low3)
+  // Check if the middle candle is a new high
+   if(high2 > high1 && high2 > high3)
      {
-      previousLow = currentLow;  // Update previousLow before changing currentLow
-      currentLow = low2;         // Now update currentLow to the new low
-      newLow = true; //flag that a new low has formed
+      previousHigh = currentHigh;  // Update previousHigh before changing currentHigh
+      currentHigh = high2;         // Now update currentHigh to the new high
+      newHigh = true; //flag that a new high has formed
      }
-    else ;
-  
-      // Check if the close price is below the current low and no alert has been sent yet and a new low has formed
-    if (closePrice < currentLow && !alertSent && currentLow!=0.0 && newLow)
+     else ;
+    
+        // Check if the close price is above the current high and no alert has been sent yet and a new high has formed
+    if (closePrice > currentHigh && !alertSent && currentHigh!=0.0 && newHigh)
     {
-        Alert("Bearish BoS: ", _Symbol, "(", EnumToString(_Period), ") close at ", DoubleToString(closePrice, _Digits)," below currentLow ", DoubleToString(currentLow, _Digits));
+        Alert(_Symbol," is Bullish on ", "(", EnumToString(_Period), "). Closed at ", DoubleToString(closePrice, _Digits)," above recent high of ", DoubleToString(currentHigh, _Digits));
         alertSent = true; // Set alertSent to true to avoid repeated alerts
     }
     else ;
-  }
-
+}
+  
 //+------------------------------------------------------------------+
 //| Timer function to check for alerts after candle closes           |
 //+------------------------------------------------------------------+
 void OnTimer()
-{
-    alertSent = false;   // Reset alertSent flag for new candle
-    newLow = false;   // Reset alertSent flag for new low
+{   
+    alertSent = false;// Reset alertSent flag for new candle
+    newHigh = false;// Reset alertSent flag for new high
 }
