@@ -14,7 +14,6 @@ double previousHigh = 0.0; // Variable to hold the previous high
 double closePrice = 0.0; // Variable to hold the closePrice
 
 bool alertSent = false; //Variable to flag alert
-bool newHigh = false; //Variable to flag newHigh
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -56,17 +55,15 @@ void OnTick()
      {
       previousHigh = currentHigh;  // Update previousHigh before changing currentHigh
       currentHigh = high2;         // Now update currentHigh to the new high
-      newHigh = true; //flag that a new high has formed
      }
-     else ;
-    
-        // Check if the close price is above the current high and no alert has been sent yet and a new high has formed
-    if (closePrice > currentHigh && !alertSent && currentHigh!=0.0 && newHigh)
+      
+        // Check if the close price is above the current high and no alert has been sent yet 
+    if (closePrice > currentHigh && !alertSent && currentHigh!=0.0)
     {
         Alert(_Symbol," is Bullish on ", "(", EnumToString(_Period), "). Closed at ", DoubleToString(closePrice, _Digits)," above recent high of ", DoubleToString(currentHigh, _Digits));
         alertSent = true; // Set alertSent to true to avoid repeated alerts
     }
-    else ;
+  
 }
   
 //+------------------------------------------------------------------+
@@ -75,5 +72,6 @@ void OnTick()
 void OnTimer()
 {   
     alertSent = false;// Reset alertSent flag for new candle
-    newHigh = false;// Reset alertSent flag for new high
+    
 }
+
